@@ -1,0 +1,20 @@
+const mongoose = require("mongoose");
+const colors = require("colors");
+
+const connectDB = async () => {
+  console.log("Function in database")
+  try {    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      // findOneAndUpdate: true, /* this should be modified */
+      // useCreateIndex: true
+    });
+
+    console.log(`MongoDB Connected: ${conn.connection.host}`.cyan.underline);
+  } catch (error) {
+    console.log(`Error: ${error.message}`.red.bold);
+    process.exit();
+  }
+};
+console.log("last in");
+module.exports = connectDB;
