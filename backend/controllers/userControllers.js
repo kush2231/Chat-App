@@ -11,10 +11,18 @@ const allUsers = asyncHandler(async (req, res) => {
           { email: { $regex: req.query.search, $options: "i" } },
         ],
       }
-    : {};
+        : {};
+    console.log(keyword);
 
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-  res.send(users);
+    
+    if (users)
+        res.send(users);
+    else {
+        res.status(400);
+        throw new Error("Failed to find the User");
+    }
+        
 });
 
 const registerUser =async (req,res) =>

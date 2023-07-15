@@ -7,13 +7,13 @@ const User = require("../models/UserModel")
 //@access          Protected
 const accessChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
-
+  console.log("it hits in accesschat");
   if (!userId) {
     console.log("UserId param not sent with request");
     return res.sendStatus(400);
   }
 
-  var isChat = await Chat.find({
+  let isChat = await Chat.find({
     isGroupChat: false,
     $and: [
       { users: { $elemMatch: { $eq: req.user._id } } },
@@ -43,6 +43,7 @@ const accessChat = asyncHandler(async (req, res) => {
         "users",
         "-password"
       );
+      console.log(FullChat);
       res.status(200).json(FullChat);
     } catch (error) {
       res.status(400);
@@ -55,7 +56,7 @@ const accessChat = asyncHandler(async (req, res) => {
 //@route           GET /api/chat/
 //@access          Protected
 const fetchChats = asyncHandler(async (req, res) => {
-  try {
+  try {   console.log("it hits in fetchchat");
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
