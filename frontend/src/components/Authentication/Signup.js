@@ -13,10 +13,10 @@ const Signup = () => {
   const toast = useToast();
   const Navigate = useNavigate();
 
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [confirmpassword, setConfirmpassword] = useState();
-  const [password, setPassword] = useState();
+  const [name, setName] = useState("name");
+  const [email, setEmail] = useState("email");
+  const [confirmpassword, setConfirmpassword] = useState("cpass");
+  const [password, setPassword] = useState("pass");
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
 
@@ -71,7 +71,7 @@ const Signup = () => {
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
       setPicLoading(false);
-      Navigate.push("/chats");
+      Navigate("/chats");
     } catch (error) {
       toast({
         title: "Error Occured! ",
@@ -153,7 +153,7 @@ const Signup = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
-      <FormControl id="password1" isRequired>
+      <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
         <InputGroup size="md">
           <Input
@@ -168,7 +168,7 @@ const Signup = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id="password2" isRequired>
+      <FormControl id="password" isRequired>
         <FormLabel>Confirm Password</FormLabel>
         <InputGroup size="md">
           <Input

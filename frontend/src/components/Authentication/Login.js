@@ -11,8 +11,8 @@ const Login = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const toast = useToast();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("email");
+  const [password, setPassword] = useState("password");
   const [loading, setLoading] = useState(false);
 
   const Navigate = useNavigate();
@@ -55,7 +55,7 @@ const Login = () => {
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
-      Navigate.push("/chats");
+      Navigate("/chats");
     } catch (error) {
       toast({
         title: "Error Occured!",

@@ -1,29 +1,34 @@
 import { Box } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
-// import Chatbox from "../components/Chatbox";
-// import MyChats from "../components/MyChats";
-// import SideDrawer from "../components/miscellaneous/SideDrawer";
-// import { ChatState } from "../Context/ChatProvider";
-import axios from "axios";
+import Chatbox from "../components/Chatbox";
+import MyChats from "../components/MyChats";
+import SideDrawer from "../components/miscellaneous/SideDrawer";
+import { useNavigate } from "react-router-dom";
+
+import { ChatState } from "../Context/ChatProvider";
 
 const Chatpage = () => {
+  const [fetchAgain, setFetchAgain] = useState(false);
+  const { user } = ChatState();
 
-  // const [fetchAgain, setFetchAgain] = useState(false);
-  // const { user } = ChatState();
-  const [data, setdata] = useState("hey");
-  const fetchchats = async() => {
-    const response = await axios.get('http://localhost:3000/api/chat')
-    setdata(response.data);
-    console.log(response.data);
-  }
-  // fetchchats()
-  useEffect(()=>{
-    fetchchats()
-  },[])
+  const Navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+    // console.log(user);
+    if (!user) Navigate("/");
+  }, [Navigate]);  // if it does not find a user , go back to home page 
 
   return (
     <div style={{ width: "100%" }}>
-           hello world 
+      {user && <SideDrawer />}
+      <Box display="flex" justifyContent="space-between" w="100%" h="91.5vh" p="10px">
+        {user && <MyChats fetchAgain={fetchAgain} />}
+        {user && (
+          <Chatbox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+        )}
+      </Box>
+    
     </div>
   );
 };

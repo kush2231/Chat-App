@@ -13,13 +13,14 @@ import { useNavigate } from "react-router";
 import Login from "../components/Authentication/Login";
 import Signup from "../components/Authentication/Signup";
 
+
 function Homepage() {
   const Navigate = useNavigate();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("userInfo"));
-
-    if (user) Navigate.push("/chats");
+    console.log(user);
+    if (user) Navigate("/chats");
   }, [Navigate]);
 
   return (
