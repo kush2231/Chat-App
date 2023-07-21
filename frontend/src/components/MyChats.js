@@ -25,8 +25,11 @@ const MyChats = ({ fetchAgain }) => {
         },
       };
       // console.log(user);
-    //  console.log("this is token " + Object.values(Object.keys(config)))
-      const { data } = await axios.get("http://localhost:3000/api/chat", config);
+      //  console.log("this is token " + Object.values(Object.keys(config)))
+      const { data } = await axios.get(
+        "http://localhost:4000/api/chat",
+        config
+      );
       setChats(data);
     } catch (error) {
       toast({
@@ -56,6 +59,7 @@ const MyChats = ({ fetchAgain }) => {
       w={{ base: "100%", md: "31%" }}
       borderRadius="lg"
       borderWidth="1px"
+      border="2px solid blue"
     >
       <Box
         pb={3}
@@ -70,7 +74,6 @@ const MyChats = ({ fetchAgain }) => {
         My Chats
         <GroupChatModal>
           <Button
-            
             fontSize={{ base: "17px", md: "10px", lg: "17px" }}
             rightIcon={<AddIcon />}
           >
@@ -86,11 +89,12 @@ const MyChats = ({ fetchAgain }) => {
         w="100%"
         h="100%"
         borderRadius="lg"
-        overflowY="hidden"
+        overflow="scroll"
+        border="2px solid pink"
       >
-        {chats ? (
+        {chats && chats ? (
           <Stack overflowY="scroll">
-            {chats.map((chat) => (
+            {chats?.map((chat) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"
@@ -99,17 +103,17 @@ const MyChats = ({ fetchAgain }) => {
                 px={3}
                 py={2}
                 borderRadius="lg"
-                key={chat._id}
+                key={chat?._id}
               >
                 <Text>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
-                    : chat.chatName}
+                    : chat?.chatName}
                 </Text>
-                {chat.latestMessage && (
+                {chat?.latestMessage && (
                   <Text fontSize="xs">
                     <b>{chat.latestMessage.sender.name} : </b>
-                    {chat.latestMessage.content.length > 50
+                    {chat?.latestMessage.content.length > 50
                       ? chat.latestMessage.content.substring(0, 51) + "..."
                       : chat.latestMessage.content}
                   </Text>

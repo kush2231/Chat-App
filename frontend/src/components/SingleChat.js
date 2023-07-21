@@ -51,7 +51,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-        `http://localhost:3000/api/message/${selectedChat._id}`,
+        `http://localhost:4000/api/message/${selectedChat._id}`,
         config
       );
       setMessages(data);
@@ -84,7 +84,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         console.log(user.token);
         setNewMessage("");
         const { data } = await axios.post(
-          "http://localhost:3000/api/message",
+          "http://localhost:4000/api/message",
           {
             content: newMessage,
             chatId: selectedChat,
@@ -219,9 +219,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
-                <div className="messages">
-                  
-                < ScrollableChat messages={messages} />
+              <div className="messages">
+                <ScrollableChat messages={messages} />
               </div>
             )}
 
@@ -249,13 +248,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 placeholder="Enter a message.."
                 value={newMessage}
                 onChange={typingHandler}
+                border="2px solid green"
               />
             </FormControl>
           </Box>
         </>
       ) : (
         // to get socket.io on same page
-        <Box display="flex" alignItems="center" justifyContent="center" h="100%">
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          h="100%"
+        >
           <Text fontSize="3xl" pb={3} fontFamily="Work sans">
             Click on a user to start chatting
           </Text>
