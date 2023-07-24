@@ -12,7 +12,7 @@ const allUsers = asyncHandler(async (req, res) => {
         ],
       }
         : {};
-    console.log(keyword);
+    // console.log(keyword);
 
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
     
@@ -27,7 +27,7 @@ const allUsers = asyncHandler(async (req, res) => {
 
 const registerUser =async (req,res) =>
 {
-    console.log("userController");
+    // console.log("userController");
     const { name, email, password, pic } = req.body;
     if (!name || !email || !password)
     {
@@ -65,7 +65,7 @@ const registerUser =async (req,res) =>
 
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-
+    // console.log(req);
     const user = await User.findOne({ email });
     // console.log(user);
     // res.send("hello world");  // old way not working 
