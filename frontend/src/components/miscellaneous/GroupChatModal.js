@@ -58,7 +58,7 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`http://localhost:3000/api/user?search=${search}`, config);
+      const { data } = await axios.get(`http://localhost:4000/api/user?search=${search}`, config);
       console.log(data);
       setLoading(false);
       setSearchResult(data);
@@ -75,7 +75,7 @@ const GroupChatModal = ({ children }) => {
   };
 
   const handleDelete = (delUser) => {
-    setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
+    setSelectedUsers(selectedUsers.filter((sel) => sel?._id !== delUser?._id));
   };
 
   const handleSubmit = async () => {
@@ -97,10 +97,10 @@ const GroupChatModal = ({ children }) => {
         },
       };
       const { data } = await axios.post(
-        `http://localhost:3000/api/chat/group`,
+        `http://localhost:4000/api/chat/group`,
         {
           name: groupChatName,
-          users: JSON.stringify(selectedUsers.map((u) => u._id)),
+          users: JSON.stringify(selectedUsers.map((u) => u?._id)),
         },
         config
       );
@@ -159,7 +159,7 @@ const GroupChatModal = ({ children }) => {
             <Box w="100%" d="flex" flexWrap="wrap">
               {selectedUsers.map((u) => (
                 <UserBadgeItem
-                  key={u._id}
+                  key={u?._id}
                   user={u}
                   handleFunction={() => handleDelete(u)}
                 />
@@ -173,7 +173,7 @@ const GroupChatModal = ({ children }) => {
                 ?.slice(0, 4)
                 .map((user) => (
                   <UserListItem
-                    key={user._id}
+                    key={user?._id}
                     user={user}
                     handleFunction={() => handleGroup(user)}
                   />

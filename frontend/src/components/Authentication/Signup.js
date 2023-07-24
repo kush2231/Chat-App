@@ -51,7 +51,7 @@ const Signup = () => {
         },
       };
       const { data } = await axios.post(  // sending   to server post method 
-        "http://localhost:3000/api/user",
+        "http://localhost:4000/api/user",
         {
           name,
           email,
@@ -107,12 +107,7 @@ const Signup = () => {
         method: "post",
         body: data,
       })
-      // data.append("upload_preset", "chat-app");
-      // data.append("cloud_name", "piyushproj");
-      // fetch("https://api.cloudinary.com/v1_1/piyushproj/image/upload", {
-      //   method: "post",
-      //   body: data,
-      // })
+      
         .then((res) => res.json())
         .then((data) => {
           setPic(data.url.toString());
