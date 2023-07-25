@@ -45,8 +45,7 @@ app.use("/api/message", messageRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
-
+const PORT = process.env.PORT || 4000;
 const server = app.listen(
   PORT,
   console.log(`Server running on PORT  ${PORT}...`.yellow.bold)
@@ -55,7 +54,7 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:5000", // frontend port
+    origin: "http://localhost:3000", // frontend port
     // credentials: true,
   },
 });
