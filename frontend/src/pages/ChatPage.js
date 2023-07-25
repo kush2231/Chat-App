@@ -18,8 +18,8 @@ const Chatpage = () => {
     // console.log(user);
     if (!user) Navigate("/");
     else {
-      console.log(user);
-      console.log(" found ")
+      // console.log(user);
+      // console.log(" found ")
     }
   }, [Navigate]);  // if it does not find a user , go back to home page 
 
