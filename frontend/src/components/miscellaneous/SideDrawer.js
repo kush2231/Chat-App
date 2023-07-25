@@ -28,9 +28,10 @@ import { Spinner } from "@chakra-ui/spinner";
 import ProfileModal from "./ProfileModal";
 import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
-import { getSender } from "../../config/chatLogics";
+import { getSender } from "../config/chatLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
+import { BASE_URL } from "../config";
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
@@ -78,7 +79,7 @@ function SideDrawer() {
       };
 
       const { data } = await axios.get(
-        `http://localhost:4000/api/user?search=${search}`,
+        `${BASE_URL}/api/user?search=${search}`,
         config
       );
 
@@ -109,7 +110,7 @@ function SideDrawer() {
         },
       };
       const { data } = await axios.post(
-        `http://localhost:4000/api/chat`,
+        `${BASE_URL}/api/chat`,
         { userId },
         config
       );

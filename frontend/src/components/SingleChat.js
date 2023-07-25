@@ -3,7 +3,7 @@ import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import "./styles.css";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
-import { getSender, getSenderFull } from "../config/chatLogics";
+import { getSender, getSenderFull } from "./config/chatLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -15,7 +15,9 @@ import animationData from "../animations/typing.json";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModel";
 import { ChatState } from "../Context/ChatProvider";
-const ENDPOINT = "http://localhost:4000"; // backend port=4000  
+// const ENDPOINT = "BASE_URL"; // backend port=4000
+import { BASE_URL } from "./config";
+
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -51,7 +53,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-        `http://localhost:4000/api/message/${selectedChat?._id}`,
+        `${BASE_URL}/api/message/${selectedChat?._id}`,
         config
       );
       setMessages(data);
@@ -70,7 +72,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
   useEffect(() => {
-    socket = io(ENDPOINT);
+    socket = io(BASE_URL);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
@@ -93,7 +95,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         // console.log(user.token);
         setNewMessage("");
         const { data } = await axios.post(
-          "http://localhost:4000/api/message",
+          `${BASE_URL}/api/message`,
           {
             content: newMessage,
             chatId: selectedChat,
@@ -115,7 +117,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }
   };
-
 
   useEffect(() => {
     fetchMessages();
