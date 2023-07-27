@@ -15,7 +15,7 @@ const ScrollableChat = ({ messages }) => {
     <div
       style={{
         border: "2px solid green",
-        height: "70vh",
+        height: "68vh",
         overflow: "scroll",
         borderRadius: "5px",
         backgroundImage:
