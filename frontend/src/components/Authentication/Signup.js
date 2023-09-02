@@ -45,14 +45,15 @@ const Signup = () => {
       });
       return;
     }
-    console.log(name, email, password, pic);
+    // console.log(name, email, password, pic);
     try {
       const config = {
         headers: {
-          "Content-type": "application/json",  // request type is json 
+          "Content-type": "application/json", // request type is json
         },
       };
-      const { data } = await axios.post(  // sending   to server post method 
+      const { data } = await axios.post(
+        // sending   to server post method
         `${BASE_URL}/api/user`,
         {
           name,
@@ -62,8 +63,8 @@ const Signup = () => {
         },
         config
       );
-      console.log("inside request");
-      console.log(data);
+      // console.log("inside request");
+      // console.log(data);
       toast({
         title: "Registration Successful",
         status: "success",
@@ -99,7 +100,7 @@ const Signup = () => {
       });
       return;
     }
-    console.log(pics);
+    // console.log(pics);
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
@@ -109,11 +110,10 @@ const Signup = () => {
         method: "post",
         body: data,
       })
-      
         .then((res) => res.json())
         .then((data) => {
           setPic(data.url.toString());
-          console.log(data.url.toString());
+          // console.log(data.url.toString());
           setPicLoading(false);
         })
         .catch((err) => {
