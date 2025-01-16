@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { getSender } from "./config/chatLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
-import { Button } from "@chakra-ui/react";
+import { Button, Image } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 import { BASE_URL } from "./config";
 const MyChats = ({ fetchAgain }) => {
@@ -42,12 +42,12 @@ const MyChats = ({ fetchAgain }) => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("userInfo");
-  if (storedUser) {
-    setLoggedUser(JSON.parse(storedUser));
-  }
-  else{
-    console.log("userinfo not found")
-  }
+    if (storedUser) {
+      setLoggedUser(JSON.parse(storedUser));
+    }
+    else {
+      console.log("userinfo not found")
+    }
 
     fetchChats();
     // eslint-disable-next-line
@@ -108,20 +108,37 @@ const MyChats = ({ fetchAgain }) => {
                 py={2}
                 borderRadius='lg'
                 key={chat?._id}
+                display="flex"
+                alignItems="center"
               >
-                <Text>
-                  {!chat.isGroupChat
-                    ? getSender(loggedUser, chat.users)
-                    : chat?.chatName}
-                </Text>
-                {chat?.latestMessage && (
-                  <Text fontSize='xs'>
-                   <b>{chat.latestMessage.sender ? chat.latestMessage.sender.name : 'Test'} : </b>
-                    {chat?.latestMessage.content.length > 50
-                      ? chat.latestMessage.content.substring(0, 51) + "..."
-                      : chat.latestMessage.content}
-                  </Text>
+                { (
+                  <Image
+                    borderRadius="full"
+                    boxSize="30px"
+                    mr={3}
+                    src={chat.latestMessage.sender? chat.latestMessage.sender.pic : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"}
+                    alt={user ? user.name : "Test"}
+                  />
                 )}
+                {/* Stack for column arrangement of text (sender name/chat name and latest message) */}
+                <Stack spacing={0} justify="center">
+                  <Text fontWeight="bold">
+                    {!chat.isGroupChat
+                      ? getSender(loggedUser, chat.users)
+                      : chat?.chatName}
+                  </Text>
+
+                  {chat?.latestMessage && (
+                    <Text fontSize="xs" color="gray.500">
+                      <b>
+                        {chat.latestMessage.sender ? chat.latestMessage.sender.name : 'Test'}:
+                      </b>
+                      {chat?.latestMessage.content.length > 50
+                        ? chat.latestMessage.content.substring(0, 51) + "..."
+                        : chat.latestMessage.content}
+                    </Text>
+                  )}
+                </Stack>
               </Box>
             ))}
           </Stack>
