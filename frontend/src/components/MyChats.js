@@ -41,7 +41,14 @@ const MyChats = ({ fetchAgain }) => {
   };
 
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    const storedUser = localStorage.getItem("userInfo");
+  if (storedUser) {
+    setLoggedUser(JSON.parse(storedUser));
+  }
+  else{
+    console.log("userinfo not found")
+  }
+
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
@@ -109,7 +116,7 @@ const MyChats = ({ fetchAgain }) => {
                 </Text>
                 {chat?.latestMessage && (
                   <Text fontSize='xs'>
-                    <b>{chat.latestMessage.sender.name} : </b>
+                   <b>{chat.latestMessage.sender ? chat.latestMessage.sender.name : 'Test'} : </b>
                     {chat?.latestMessage.content.length > 50
                       ? chat.latestMessage.content.substring(0, 51) + "..."
                       : chat.latestMessage.content}

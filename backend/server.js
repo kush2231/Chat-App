@@ -30,7 +30,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 4000;
 const server = app.listen(
   PORT,
-  console.log(`Server running on PORT  ${PORT}...`.yellow.bold)
+  console.log(`Server running on http://localhost:${PORT}...`.yellow.bold)
 );
 
 const io = require("socket.io")(server, {
