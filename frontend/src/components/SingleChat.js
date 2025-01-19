@@ -143,6 +143,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
+    console.log("is socket connected " + socketConnected);
 
     if (!socketConnected) return;
 
@@ -212,6 +213,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             overflowY='hidden'
           >
             {loading ? (
+              <Box
+              display='flex'
+              alignItems='center'
+              justifyContent='center'
+                        style={{
+                border: "2px solid green",
+                height: "70vh",
+                overflow: "scroll",
+                borderRadius: "5px",
+                backgroundImage:
+                  'url("https://w0.peakpx.com/wallpaper/818/148/HD-wallpaper-whatsapp-background-cool-dark-green-new-theme-whatsapp.jpg")',
+              }}> 
               <Spinner
                 size='xl'
                 w={20}
@@ -219,6 +232,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 alignSelf='center'
                 margin='auto'
               />
+              </Box>
             ) : (
               <div className='messages'>
                 <ScrollableChat messages={messages} />
@@ -263,7 +277,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           h='100%'
         >
           <Text fontSize='3xl' pb={3} fontFamily='Work sans'>
-            Click on a user to start chatting
+            Click on a user to start Chatting
           </Text>
         </Box>
       )}

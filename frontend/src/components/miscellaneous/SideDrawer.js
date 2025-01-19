@@ -151,7 +151,7 @@ function SideDrawer() {
           </Button>
         </Tooltip>
         <Text fontSize='2xl' fontFamily='Work sans'>
-          Chit-Chat-App
+          Chat-App
         </Text>
         <div>
           <Menu>

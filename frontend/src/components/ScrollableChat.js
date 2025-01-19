@@ -15,7 +15,7 @@ const ScrollableChat = ({ messages }) => {
     <div
       style={{
         border: "2px solid green",
-        height: "63vh",
+        height: "70vh",
         overflow: "scroll",
         borderRadius: "5px",
         backgroundImage:
@@ -44,6 +44,7 @@ const ScrollableChat = ({ messages }) => {
                   m.sender?._id === user?._id ? "#BEE3F8" : "#B9F5D0"
                 }`,
                 marginLeft: isSameSenderMargin(messages, m, i, user?._id),
+                marginRight : 10,
                 marginTop: isSameUser(messages, m, i, user?._id) ? 3 : 10,
                 borderRadius: "20px",
                 padding: "5px 15px",

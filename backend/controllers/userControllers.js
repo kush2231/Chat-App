@@ -37,8 +37,11 @@ const registerUser =async (req,res) =>
     const userExists = await User.findOne({ email });
     if (userExists)
     {
+        res.status(401).json({
+            "message": "User already exists"
+        })
         res.status(400);  
-        throw new Error("user already Exists");
+        
     }
     const user = await User.create(
         {
@@ -91,7 +94,7 @@ const authUser = asyncHandler(async (req, res) => {
         })
         }
        else {
-           throw new Error(" not matched password");
+           throw new Error("not matched password");
     }
 });
 
