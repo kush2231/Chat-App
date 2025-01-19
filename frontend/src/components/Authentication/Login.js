@@ -7,6 +7,7 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from '../config'
+import { ChatState } from "../../Context/ChatProvider";
 
 const Login = () => {
   const [show, setShow] = useState(false);
@@ -17,6 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const Navigate = useNavigate();
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     setLoading(true);
@@ -55,6 +57,7 @@ const Login = () => {
         position: "top",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
       Navigate("/chats");
       setLoading(false);
     } catch (error) {

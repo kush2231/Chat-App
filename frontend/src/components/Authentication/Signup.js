@@ -7,6 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { BASE_URL } from "../config";
+import { ChatState } from "../../Context/ChatProvider";
 
 
 const Signup = () => {
@@ -21,6 +22,7 @@ const Signup = () => {
   const [password, setPassword] = useState("pass");
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     setPicLoading(true);
@@ -73,6 +75,7 @@ const Signup = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
       setPicLoading(false);
       Navigate("/chats");
     } catch (error) {
@@ -89,6 +92,8 @@ const Signup = () => {
   };
 
   const postDetails = (pics) => {
+    console.log("this is pics here ", pics);
+    
     setPicLoading(true);
     if (pics === undefined) {
       toast({

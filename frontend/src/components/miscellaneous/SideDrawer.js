@@ -28,7 +28,7 @@ import { Spinner } from "@chakra-ui/spinner";
 import ProfileModal from "./ProfileModal";
 import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
-import { getSender } from "../config/chatLogics";
+import { getSenderName } from "../config/chatLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
 import { BASE_URL } from "../config";
@@ -54,6 +54,9 @@ function SideDrawer() {
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
+    setNotification([]);
+    setSelectedChat();
+    setChats();
     Navigate("/");
   };
 
@@ -174,7 +177,7 @@ function SideDrawer() {
                 >
                   {notif.chat.isGroupChat
                     ? `New Message in ${notif.chat.chatName}`
-                    : `New Message from ${getSender(user, notif.chat.users)}`}
+                    : `New Message from ${getSenderName(user, notif.chat.users)}`}
                 </MenuItem>
               ))}
             </MenuList>
