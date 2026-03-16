@@ -180,7 +180,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             <IconButton
               d={{ base: "flex", md: "none" }}
               icon={<ArrowBackIcon />}
-              onClick={() => setSelectedChat("")}
+              onClick= {() => {
+                  socket.emit("leave chat", selectedChat?._id);
+                setSelectedChat("");}}
             />
             {messages &&
               (!selectedChat.isGroupChat ? (

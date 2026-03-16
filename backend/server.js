@@ -8,7 +8,8 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 const cors = require("cors");
 
-dotenv.config();
+// dotenv.config();
+require('dotenv').config(); 
 connectDB();
 const app = express();
 app.use(cors());
@@ -42,10 +43,10 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  // console.log("Connected to socket.io");
+  console.log("Connected to socket.io");
   socket.on("setup", (userData) => {
     socket.join(userData._id);
-    // console.log(userData._id);
+    // console.log( 'this is user id',userData._id);
     socket.emit("connected");
   });
 
@@ -53,10 +54,18 @@ io.on("connection", (socket) => {
     socket.join(room);
     // console.log("User Joined Room: " + room);
   });
+
+  socket.on("leave chat", (room) => {
+  socket.leave(room);
+  console.log("User left room:", room);
+
+  socket.to(room).emit("user left", socket.id);
+});
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
   socket.on("new message", (newMessageRecieved) => {
+    // console.log("New message received:", newMessageRecieved);
     var chat = newMessageRecieved.chat;
 
     if (!chat.users) return console.log("chat.users not defined");
