@@ -98,4 +98,26 @@ const authUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports={ registerUser, authUser, allUsers };  // not a default export 
+const updateUserPic = asyncHandler(async (req, res) => {
+  const { userId, pic } = req.body;
+
+  const user = await User.findById(userId);
+
+  if (user) {
+    user.pic = pic;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      pic: updatedUser.pic,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+module.exports={ registerUser, authUser, allUsers , updateUserPic };  // not a default export 

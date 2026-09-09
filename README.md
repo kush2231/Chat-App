@@ -7,3 +7,5 @@ Database: MongoDB
 two-way communication: socket IO, 
 Authorization:JWT ,
 Stying: Chakra UI 
+
+// Tech, career,  and AI, and life 
