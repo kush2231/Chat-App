@@ -1,4 +1,4 @@
-import { ViewIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Modal,
   ModalOverlay,
@@ -14,6 +14,11 @@ import {
   Image,
   useToast,
   Spinner,
+  Input,
+  InputGroup,
+  InputRightElement,
+  VStack,
+  Divider,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import axios from "axios";
@@ -22,16 +27,34 @@ import { ChatState } from "../../Context/ChatProvider";
 
 const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setUser } = ChatState();
+  const { user: loggedInUser, setUser } = ChatState();
   const toast = useToast();
+  const isOwnProfile = loggedInUser?._id === user?._id;
 
+  // Pic state
   const fileInputRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  const handleImageClick = () => {
-    fileInputRef.current.click();
+  // Password state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pwdLoading, setPwdLoading] = useState(false);
+
+  const handleClose = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPreview(null);
+    onClose();
   };
+
+  // ── Profile picture ──────────────────────────────────────────────────────
+  const handleImageClick = () => fileInputRef.current.click();
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -41,7 +64,6 @@ const ProfileModal = ({ user, children }) => {
     setUploading(true);
 
     try {
-      // 1. Upload to Cloudinary
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "Chat-App");
@@ -54,44 +76,72 @@ const ProfileModal = ({ user, children }) => {
       const cloudData = await cloudRes.json();
       const cloudinaryUrl = cloudData.url.toString();
 
-      // 2. Update pic in DB
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${loggedInUser.token}`,
         },
       };
-      const { data } = await axios.put(
+      await axios.put(
         `${BASE_URL}/api/user/update-pic`,
-        { userId: user._id, pic: cloudinaryUrl },
+        { userId: loggedInUser._id, pic: cloudinaryUrl },
         config
       );
 
-      // 3. Update preview and global user state + localStorage
       setPreview(cloudinaryUrl);
-      const updatedUser = { ...user, pic: cloudinaryUrl };
-      setUser(updatedUser);
-      localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+      const updated = { ...loggedInUser, pic: cloudinaryUrl };
+      setUser(updated);
+      localStorage.setItem("userInfo", JSON.stringify(updated));
 
-      toast({
-        title: "Profile picture updated!",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast({ title: "Profile picture updated!", status: "success", duration: 3000, isClosable: true, position: "bottom" });
     } catch (err) {
-      console.error(err);
+      toast({ title: "Failed to update picture", description: err.message, status: "error", duration: 4000, isClosable: true, position: "bottom" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // ── Password ─────────────────────────────────────────────────────────────
+  const handlePasswordUpdate = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return toast({ title: "Please fill all password fields", status: "warning", duration: 3000, isClosable: true, position: "bottom" });
+    }
+    if (newPassword !== confirmPassword) {
+      return toast({ title: "New passwords do not match", status: "warning", duration: 3000, isClosable: true, position: "bottom" });
+    }
+    if (newPassword.length < 6) {
+      return toast({ title: "Password must be at least 6 characters", status: "warning", duration: 3000, isClosable: true, position: "bottom" });
+    }
+
+    setPwdLoading(true);
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loggedInUser.token}`,
+        },
+      };
+      await axios.put(
+        `${BASE_URL}/api/user/update-password`,
+        { currentPassword, newPassword },
+        config
+      );
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast({ title: "Password updated successfully!", status: "success", duration: 3000, isClosable: true, position: "bottom" });
+    } catch (err) {
       toast({
-        title: "Failed to update picture",
-        description: err.message,
+        title: "Failed to update password",
+        description: err.response?.data?.message || err.message,
         status: "error",
         duration: 4000,
         isClosable: true,
         position: "bottom",
       });
     } finally {
-      setUploading(false);
+      setPwdLoading(false);
     }
   };
 
@@ -102,58 +152,136 @@ const ProfileModal = ({ user, children }) => {
       ) : (
         <IconButton d={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
       )}
-      <Modal size="lg" onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal size="lg" onClose={handleClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
-        <ModalContent h="410px">
-          <ModalHeader
-            fontSize="40px"
-            fontFamily="Work sans"
-            d="flex"
-            justifyContent="center"
-          >
+        <ModalContent>
+          <ModalHeader fontSize="40px" fontFamily="Work sans" textAlign="center">
             {user?.name || "Test"}
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody
-            d="flex"
-            flexDir="column"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-            <div style={{ position: "relative", display: "inline-block" }}>
-              <Image
-                borderRadius="full"
-                boxSize="150px"
-                cursor={uploading ? "not-allowed" : "pointer"}
-                onClick={!uploading ? handleImageClick : undefined}
-                src={preview || user?.pic}
-                alt={user?.name || "Profile"}
-                opacity={uploading ? 0.5 : 1}
-              />
-              {uploading && (
-                <Spinner
-                  position="absolute"
-                  top="50%"
-                  left="50%"
-                  transform="translate(-50%, -50%)"
-                  color="green.400"
-                  size="lg"
+          <ModalBody>
+            <VStack spacing={4} align="center">
+              {/* Avatar */}
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <Image
+                  borderRadius="full"
+                  boxSize="150px"
+                  cursor={isOwnProfile && !uploading ? "pointer" : "default"}
+                  onClick={isOwnProfile && !uploading ? handleImageClick : undefined}
+                  src={preview || user?.pic}
+                  alt={user?.name || "Profile"}
+                  opacity={uploading ? 0.5 : 1}
                 />
+                {uploading && (
+                  <Spinner
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    transform="translate(-50%, -50%)"
+                    color="green.400"
+                    size="lg"
+                  />
+                )}
+                {isOwnProfile && (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                  />
+                )}
+              </div>
+
+              {isOwnProfile && (
+                <Text fontSize="xs" color="gray.500">
+                  Click photo to change
+                </Text>
               )}
-            </div>
-            <Text fontSize={{ base: "28px", md: "30px" }} fontFamily="Work sans">
-              Email: {user?.email}
-            </Text>
+
+              <Text fontSize={{ base: "22px", md: "24px" }} fontFamily="Work sans">
+                Email: {user?.email}
+              </Text>
+
+              {/* Password section — only for own profile */}
+              {isOwnProfile && (
+                <>
+                  <Divider />
+                  <Text fontWeight="semibold" alignSelf="flex-start" fontSize="md">
+                    Change Password
+                  </Text>
+
+                  <InputGroup size="md" width="100%">
+                    <Input
+                      pr="4.5rem"
+                      type={showCurrent ? "text" : "password"}
+                      placeholder="Current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                    <InputRightElement>
+                      <IconButton
+                        size="sm"
+                        variant="ghost"
+                        icon={showCurrent ? <ViewOffIcon /> : <ViewIcon />}
+                        onClick={() => setShowCurrent((v) => !v)}
+                        aria-label="Toggle current password"
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+
+                  <InputGroup size="md" width="100%">
+                    <Input
+                      pr="4.5rem"
+                      type={showNew ? "text" : "password"}
+                      placeholder="New password (min 6 characters)"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    <InputRightElement>
+                      <IconButton
+                        size="sm"
+                        variant="ghost"
+                        icon={showNew ? <ViewOffIcon /> : <ViewIcon />}
+                        onClick={() => setShowNew((v) => !v)}
+                        aria-label="Toggle new password"
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+
+                  <InputGroup size="md" width="100%">
+                    <Input
+                      pr="4.5rem"
+                      type={showConfirm ? "text" : "password"}
+                      placeholder="Confirm new password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                    <InputRightElement>
+                      <IconButton
+                        size="sm"
+                        variant="ghost"
+                        icon={showConfirm ? <ViewOffIcon /> : <ViewIcon />}
+                        onClick={() => setShowConfirm((v) => !v)}
+                        aria-label="Toggle confirm password"
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+
+                  <Button
+                    colorScheme="green"
+                    width="100%"
+                    isLoading={pwdLoading}
+                    onClick={handlePasswordUpdate}
+                  >
+                    Update Password
+                  </Button>
+                </>
+              )}
+            </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={handleClose}>Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

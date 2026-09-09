@@ -120,4 +120,32 @@ const updateUserPic = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports={ registerUser, authUser, allUsers , updateUserPic };  // not a default export 
+const updatePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    res.status(400);
+    throw new Error("Please provide current and new password");
+  }
+
+  if (newPassword.length < 6) {
+    res.status(400);
+    throw new Error("New password must be at least 6 characters");
+  }
+
+  // Fetch user with password field (protect middleware excludes it)
+  const user = await User.findById(req.user._id);
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    res.status(401);
+    throw new Error("Current password is incorrect");
+  }
+
+  user.password = newPassword;
+  await user.save(); // pre-save hook will hash the new password
+
+  res.json({ message: "Password updated successfully" });
+});
+
+module.exports = { registerUser, authUser, allUsers, updateUserPic, updatePassword };
