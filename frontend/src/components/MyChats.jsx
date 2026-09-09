@@ -1,12 +1,18 @@
 import { AddIcon } from "@chakra-ui/icons";
-import { Box, Stack, Text } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { getSenderName , getSenderPic } from "./config/chatLogics";
 import ChatLoading from "./ChatLoading"; // Shimmer loader component
 import GroupChatModal from "./miscellaneous/GroupChatModal";
-import { Button, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Image,
+  Stack,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 import { BASE_URL } from "./config";
 const MyChats = ({ fetchAgain }) => {

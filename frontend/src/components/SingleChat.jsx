@@ -1,15 +1,22 @@
-import { FormControl } from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+
+
 import "./styles.css";
-import { IconButton, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  Input,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { getSenderName, getSenderFull } from "./config/chatLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import animationData from "../animations/typing.json";
 
 import io from "socket.io-client";
@@ -29,14 +36,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     ChatState();
 
@@ -250,10 +249,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               {istyping ? (
                 <div>
                   <Lottie
-                    options={defaultOptions}
-                    // height={50}
-                    width={70}
-                    style={{ marginBottom: 5, marginLeft: 0 }}
+                    animationData={animationData}
+                    loop={true}
+                    autoplay={true}
+                    style={{ width: 70, marginBottom: 5, marginLeft: 0 }}
                   />
                 </div>
               ) : (

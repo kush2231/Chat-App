@@ -244,6 +244,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 variant="solid"
                 colorScheme="teal"
                 ml={1}
+                mb={3}
                 isLoading={renameloading}
                 onClick={handleRename}
               >
