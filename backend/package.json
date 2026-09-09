@@ -9,6 +9,9 @@
   },
   "author": "kushagra",
   "license": "ISC",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
