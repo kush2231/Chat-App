@@ -2,7 +2,7 @@ import { AddIcon } from "@chakra-ui/icons";
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { getSenderName , getSenderPic } from "./config/chatLogics";
+import { getSenderName, getSenderPic, getSenderFull } from "./config/chatLogics";
 import ChatLoading from "./ChatLoading"; // Shimmer loader component
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import {
@@ -19,7 +19,7 @@ const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const [loading, setLoading] = useState(true); 
 
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const { selectedChat, setSelectedChat, user, chats, setChats, onlineUsers } = ChatState();
 
   const toast = useToast();
 
@@ -119,16 +119,31 @@ const MyChats = ({ fetchAgain }) => {
                 display="flex"
                 alignItems="center"
               >
-                <Image
-                  borderRadius="full"
-                  boxSize="30px"
-                  mr={3}
-                  src={
-                    getSenderPic(loggedUser, chat.users)
-                    || "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
-                  }
-                  alt={ getSenderName(loggedUser, chat.users) || "Test"}
-                />
+                <Box position="relative" mr={3} flexShrink={0}>
+                  <Image
+                    borderRadius="full"
+                    boxSize="30px"
+                    src={
+                      getSenderPic(loggedUser, chat.users)
+                      || "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+                    }
+                    alt={getSenderName(loggedUser, chat.users) || "Test"}
+                  />
+                  {/* Green dot for 1-on-1 chats when the other user is online */}
+                  {!chat.isGroupChat &&
+                    onlineUsers.has(getSenderFull(loggedUser, chat.users)?._id) && (
+                      <Box
+                        position="absolute"
+                        bottom="0"
+                        right="0"
+                        w="9px"
+                        h="9px"
+                        bg="green.400"
+                        borderRadius="full"
+                        border="2px solid white"
+                      />
+                    )}
+                </Box>
                 <Stack spacing={0} justify="center">
                   <Text fontWeight="bold">
                     {!chat.isGroupChat
