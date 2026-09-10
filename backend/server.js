@@ -5,6 +5,7 @@ const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const presence = require("./config/presenceStore");
 const path = require("path");
 const cors = require("cors");
 
@@ -44,41 +45,52 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
-  socket.on("setup", (userData) => {
+
+  socket.on("setup", async (userData) => {
     socket.join(userData._id);
-    // console.log( 'this is user id',userData._id);
+
+    // Track presence in Redis (or in-memory fallback)
+    await presence.setOnline(userData._id, socket.id);
+
+    // Send this user the current list of online users
+    const onlineIds = await presence.getAllOnlineIds();
+    socket.emit("online-users", onlineIds);
+
+    // Notify everyone else that this user came online
+    socket.broadcast.emit("user-online", userData._id);
+
     socket.emit("connected");
   });
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    // console.log("User Joined Room: " + room);
   });
 
   socket.on("leave chat", (room) => {
-  socket.leave(room);
-  console.log("User left room:", room);
+    socket.leave(room);
+    socket.to(room).emit("user left", socket.id);
+  });
 
-  socket.to(room).emit("user left", socket.id);
-});
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
   socket.on("new message", (newMessageRecieved) => {
-    // console.log("New message received:", newMessageRecieved);
     var chat = newMessageRecieved.chat;
-
     if (!chat.users) return console.log("chat.users not defined");
 
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
-
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });
 
-  socket.off("setup", () => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id);
+  socket.on("disconnect", async () => {
+    const userId = await presence.getUserIdBySocket(socket.id);
+    if (userId) {
+      await presence.setOffline(userId, socket.id);
+      // Notify everyone this user went offline
+      socket.broadcast.emit("user-offline", userId);
+      console.log(`User ${userId} disconnected`);
+    }
   });
 });

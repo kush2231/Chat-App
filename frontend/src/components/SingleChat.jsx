@@ -36,7 +36,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
 
-  const { selectedChat, setSelectedChat, user, notification, setNotification } =
+  const { selectedChat, setSelectedChat, user, notification, setNotification, setOnlineUsers } =
     ChatState();
 
   const fetchMessages = async () => {
@@ -76,6 +76,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
+
+    // Presence events
+    socket.on("online-users", (ids) => {
+      setOnlineUsers(new Set(ids));
+    });
+    socket.on("user-online", (userId) => {
+      setOnlineUsers((prev) => new Set([...prev, userId]));
+    });
+    socket.on("user-offline", (userId) => {
+      setOnlineUsers((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    });
 
     // eslint-disable-next-line
   }, []);
