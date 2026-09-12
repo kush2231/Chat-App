@@ -11,7 +11,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { getSenderName, getSenderFull } from "./config/chatLogics";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "./miscellaneous/ProfileModal";
@@ -34,10 +34,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
+  const inputRef = useRef(null);
   const toast = useToast();
 
   const { selectedChat, setSelectedChat, user, notification, setNotification, setOnlineUsers } =
     ChatState();
+
+  useEffect(() => {
+    if (selectedChat) inputRef.current?.focus();
+  }, [selectedChat]);
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -274,6 +279,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <></>
               )}
               <Input
+                ref={inputRef}
                 variant='filled'
                 bg='#E0E0E0'
                 placeholder='Enter a message..'

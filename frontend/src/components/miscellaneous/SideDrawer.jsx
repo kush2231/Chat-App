@@ -3,7 +3,7 @@
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 import ChatLoading from "../ChatLoading";
@@ -54,6 +54,22 @@ function SideDrawer() {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const Navigate = useNavigate();
+  const debounceRef = useRef(null);
+
+  // Auto-search 500ms after the user stops typing
+  useEffect(() => {
+    if (!isOpen) return;
+    clearTimeout(debounceRef.current);
+    if (!search.trim()) {
+      setSearchResult([]);
+      return;
+    }
+    debounceRef.current = setTimeout(() => {
+      handleSearch();
+    }, 500);
+    return () => clearTimeout(debounceRef.current);
+    // eslint-disable-next-line
+  }, [search]);
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
@@ -77,20 +93,13 @@ function SideDrawer() {
 
     try {
       setLoading(true);
-
       const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
+        headers: { Authorization: `Bearer ${user.token}` },
       };
-
       const { data } = await axios.get(
         `${BASE_URL}/api/user?search=${search}`,
         config
       );
-
-      setLoading(false);
-      // console.log("searched users ");
       setSearchResult(data);
     } catch (error) {
       toast({
@@ -101,6 +110,8 @@ function SideDrawer() {
         isClosable: true,
         position: "bottom-left",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -222,10 +233,17 @@ function SideDrawer() {
               <Input
                 placeholder='Search by name or email'
                 mr={2}
+                my={3}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    clearTimeout(debounceRef.current);
+                    handleSearch();
+                  }
+                }}
               />
-              <Button onClick={handleSearch}>Go</Button>
+              <Button mt={3} onClick={handleSearch} isLoading={loading}>Go</Button>
             </Box>
             {loading ? (
               <ChatLoading />
